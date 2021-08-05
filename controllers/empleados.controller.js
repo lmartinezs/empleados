@@ -1,0 +1,288 @@
+const Empleado = require("../models/empleados.model.js");
+const SkillEmployee = require("../models/skill_employee.model.js");
+
+const Utils = require("../utils/utils.js");
+const controller = require("./empleados.controller.js");
+
+const config = require("../config/config.js");
+var regionStatic = require('../utils/regionHelper.js');
+
+var moment = require('moment');
+const { check } = require('express-validator');
+
+
+exports.create = (req, res) => {
+  var errors = [];
+  // Validate request
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+  }  
+  if((moment(req.body.fechanacimiento, 'YYYY-MM-DD').isValid()) == "false"){
+    errors.push("Fecha no válida, asegurese de agregarla en el YYYY-MM-DD");
+  }
+  if(!req.body.hasOwnProperty("name")){
+    errors.push("name es requerido");
+  }
+  if(!req.body.hasOwnProperty("email")){
+    errors.push("email es requerido");
+  }
+
+  //res.send(errors);
+  
+
+  // Create
+  const empleado = new Empleado({
+    name: req.body.name,
+    email: req.body.email,
+    puesto: req.body.puesto,
+    fechanacimiento: req.body.fechanacimiento,
+    direccion: req.body.direccion
+  });
+
+  // Save
+  Empleado.create(empleado, (err, data) => {
+    if (err){
+      res.status(500).send({
+        status:
+          "error",
+        message:
+          err.message || "Some error occurred while creating the Customer."
+      });
+    }else{ 
+      
+      //Create Skills Relation
+      req.body.skills.forEach(skill => { 
+        const skill_employee = new SkillEmployee({
+          id_employee: data.id,
+          id_skill: skill.id,
+        });     
+        
+        SkillEmployee.create(skill_employee, (err, skills) => {
+            console.log(skills);
+        });        
+      });
+    
+      //SkillEmployee.create
+      res.send({
+        status:
+          "success",
+        data:
+          data
+      });
+    } 
+  });  
+};
+
+exports.setRegion = async (req, res) => {
+  
+  regionStatic.setRegion(req.params.regionId)
+  res.send(regionStatic.getRegion());
+};
+
+exports.getCompleteAll = async (req, res) => {
+    let dates = [];
+    let regions = []; 
+    let selectedRegion = 1;   
+    try {
+      //dates = await exports.getArrayDates();
+      //regions = await exports.getRegions();
+    }
+    catch( err ) {
+        console.log("Error occured in one of the API call: ", err);
+    };
+    Empleado.getCompleteAll((err, data) => {
+      if (err){
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while retrieving radiobases."
+        });
+      } else{ 
+        var items = []; 
+        data.forEach(radiobase => { 
+          radiobase.date = Utils.getHumanDate(radiobase.fecha);             
+          items.push(radiobase); 
+        });  
+
+        res.render('main', {layout : 'index', radioBases: items, listExists: true, config:config,fechas:dates,regions:regions,selectedRegion: selectedRegion});
+
+      }
+    });
+
+};
+
+exports.findAll = async(req, res) => {
+    try{
+        Empleado.getAll((err, data) => {
+            if (err){
+              res.status(500).send({
+                message:
+                  err.message || "Some error occurred while retrieving radiobases."
+              });
+            } else{ 
+              /*var empleados = []; 
+              data.forEach(empl => { 
+                skills = SkillEmployee.findByEmployeeId(empl.id, (err, data) => {
+                //  console.log(data);   
+                });
+                //skills = await exports.getSkillsbyEmployyeID(empl.id);
+                console.log(skills)
+                //console.log(empl.id);
+                empleados.push(empl); 
+              });*/
+              res.send(data);
+              //res.render('radiobases', {layout : 'index', radioBases: Empleados, listExists: true, config:config,fechas:dates,regions:regions,selectedRegion: selectedRegion});
+            }
+          });
+    }
+    catch( err ) {
+        console.log("Error occured in one of the API call: ", err);
+    };
+  
+};
+
+
+/*exports.getRegions = (req, res) => {
+  return new Promise ( (resolve, reject) => {
+    Empleado.getRegions((err, data) => {
+        if (err)
+          reject(err);
+        else{ 
+          let regions = [];
+          data.forEach(region => {               
+            //region.selected = (region.region == regionStatic.getRegion())? 'selected' : '';
+            regions.push(region); 
+          });
+          resolve(regions);   
+        } 
+      });
+  });
+};*/
+/*
+exports.getArrayDates  = (req, re) => {
+  return new Promise ( (resolve, reject) => {
+
+    Empleado.getDates((err, data) => {
+      if (err)
+        reject(err);
+      else{        
+        resolve( Utils.getArrayDates(data) );   
+      } 
+      
+    });
+  });
+};*/
+
+exports.getSkillsbyEmployyeID  = (id) => {
+  //console.log(id);
+  return new Promise ( (resolve, reject) => {
+
+    SkillEmployee.findByEmployeeId(id, (err, data) => {
+      if (err){
+        reject(err);
+      }else{
+        resolve( data );   
+      }      
+    });
+  });
+};
+
+exports.detail = (req, res) => {  
+  res.render('detail', {layout : 'index', title:"Detail",empleadoId:req.params.empleadoId});
+};
+
+// Find a single Empleado with a radiobaseId
+exports.findOne = async (req, res) => {  
+
+    let skills = [];   
+    try {
+      skills = await exports.getSkillsbyEmployyeID(req.params.empleadoId);
+      //console.log(skills);
+
+    }
+    catch( err ) {
+        console.log("Error occured in one of the API call: ", err);
+    };
+
+
+    Empleado.findById (req.params.empleadoId, (err, data) => {      
+      if (err) {
+        if (err.kind === "not_found") {
+          message = `Not found Empleado with id ${req.params.radiobaseId}.`;
+          res.status(404).render('errorpage', {layout : 'index', message});
+        } else {
+          res.status(500).send({
+            message: "Error retrieving Empleado with id " + req.params.radiobaseId
+          });
+        }
+      } else {  
+        //console.log(skills);
+        var employee = []; 
+        data.forEach(item => { 
+          item.skills = skills;             
+          employee.push(item); 
+        });  
+        res.send(employee);            
+      }
+      
+    });
+
+};
+
+// Update a Empleado identified by the radiobaseId in the request
+exports.update = (req, res) => {
+   // Validate Request
+   if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+  }
+
+  Empleado.updateById(
+    req.params.radiobaseId,
+    new Empleado(req.body),
+    (err, data) => {
+      if (err) {
+        if (err.kind === "not_found") {
+          res.status(404).send({
+            message: `Not found Empleado with id ${req.params.radiobaseId}.`
+          });
+        } else {
+          res.status(500).send({
+            message: "Error updating Empleado with id " + req.params.radiobaseId
+          });
+        }
+      } else res.send(data);
+    }
+  );
+};
+
+// Delete a Empleado with the specified radiobaseId in the request
+exports.delete = (req, res) => {
+    Empleado.remove(req.params.radiobaseId, (err, data) => {
+        if (err) {
+          if (err.kind === "not_found") {
+            res.status(404).send({
+              message: `Not found Empleado with id ${req.params.radiobaseId}.`
+            });
+          } else {
+            res.status(500).send({
+              message: "Could not delete Empleado with id " + req.params.radiobaseId
+            });
+          }
+        } else res.send({ message: `Empleado was deleted successfully!` });
+      });
+};
+
+// Delete all Empleados from the database.
+exports.deleteAll = (req, res) => {
+    Empleado.removeAll((err, data) => {
+        if (err)
+          res.status(500).send({
+            message:
+              err.message || "Some error occurred while removing all radiobases."
+          });
+        else res.send({ message: `All Empleados were deleted successfully!` });
+      });
+};

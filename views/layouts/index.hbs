@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />  
+    <title>Telcel App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{config.DOMAIN}}/style.css" />
+
+  </head>
+  <body>
+    <div class="nav-scroller bg-white box-shadow">
+      
+    <nav class="navbar navbar-expand-sm navbar-dark">
+      <div class="container">
+      <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">HOME <span class="sr-only"></span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">EMPRESAS</a>
+          </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">MUNDOTELCEL</a>
+            </li>
+        </ul>
+      </div>    
+    </div>
+    </nav>
+</div>
+
+    <div class="nav-scroller bg-white box-shadow submenu">
+      <div class="container">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light  justify-content-between">
+  <a class="navbar-brand gluo-logo-telcel" title="Telcel" href="/" data_empresa_href="/content/telcel/empresas">
+                            <img loading="lazy" src="https://www.telcel.com/content/dam/htmls/img/icons/logo-telcel.svg" data-menusup="Logo" data-menuprin="No aplica" data-submenu="No aplica" data-nombreboton="Claro-shop" data-evento="clicMenuGral" data-src-lg="/content/dam/htmls/img/icons/logo-telcel.svg" data-src-md="/content/dam/htmls/img/icons/logo-telcel.svg" data-src-xs="/content/dam/htmls/img/icons/logo-telcel.svg" alt="Telcel M.R." class="js-responsive-image"></a>
+
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="navbar-nav">
+      <a class="nav-item nav-link active" href="/">Todo</a>      
+      <a class="nav-item nav-link" href="{{config.DOMAIN}}create">Agregar </a>      
+    </div>
+  </div>
+  <form class="form-inline searchForm" action="{{config.DOMAIN}}empleados/" id="searchForm">    
+    
+  </form>
+</nav>
+      </div>
+    </div>
+    {{{body}}}  
+  </body>
+</html>

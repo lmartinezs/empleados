@@ -1,0 +1,32 @@
+ <div class="container maincontent">
+    
+    <div id="app">
+
+      <table class="table">
+        <thead>
+          {{#if listExists}}
+          <tr>
+            <th scope="col">RADIOBASES</th>
+            {{#each fechas}}
+              <th scope="col"><div>{{{this.humanDate}}}</div></th>
+            {{/each}}
+          </tr>
+          {{/if}}
+        </thead>
+        <tbody>
+            {{#if listExists}} 
+            {{#each radioBases}}
+                <tr>
+                    <td scope="row"><a href="{{this.radiobase}}">{{this.radiobase}}</a></td>
+                    {{#each this.items}}
+                    <td class={{this.class}}>{{this.trafico}}</td>
+                    {{/each}}            
+                </tr>
+            {{/each}}
+          </tr>
+           {{/if}}
+        </tbody>
+      </table>
+
+    </div>
+</div>

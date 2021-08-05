@@ -1,0 +1,54 @@
+ <div class="container maincontent">
+    <div id="app">
+        
+        <table class="table">
+            <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Email</th>
+                <th scope="col">Puesto</th>                
+                <th scope="col">Dirección</th>
+                <th scope="col">Fecha de nacimiento</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(result, index) in empleados">
+                <th scope="row"><a v-bind:href="'/empleados/' + result.id">${ index }</th>
+                <td>${ result.name }</td>
+                <td>${ result.email }</td>
+                <td>${ result.puesto }</td>                
+                <td>${ result.direccion }</td>                
+                <td>${ formatDate(result.fechanacimiento) }</td>                
+                </tr>
+            </tbody>
+            </table>
+
+    </div>
+</div>
+
+   <script src="https://unpkg.com/vue"></script>  
+   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/moment@2.26.0/moment.js"></script>
+    <script>
+      const url = "http://localhost:8080/api/empleados";
+
+      const vm = new Vue({
+              delimiters: ['${', '}'],
+              el: '#app',
+              data: {
+                empleados: []
+                },
+                mounted() {
+                axios.get(url).then(response => {                    
+                    this.empleados = response.data
+                })
+                },                
+                methods: {
+                    formatDate(date) {
+                        return moment(date).format("DD/MM/YYYY")
+                    }
+                }
+            });
+
+    </script>
