@@ -73,7 +73,7 @@
    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     <script>
-      const url = "http://localhost:8080/api/skills";
+      const url = "{{config.DOMAIN}}/api/skills";
 
       const vm = new Vue({
               delimiters: ['${', '}'],
@@ -149,7 +149,7 @@
                                 .then((res) => {                                    
                                     if(res.status == "success"){
                                         //self.$router.push('/empleados');
-                                        document.location = "http://localhost:8080/";
+                                        document.location = "{{config.DOMAIN}}";
                                     }                                    
                                 })
                                 .catch((error) => {
