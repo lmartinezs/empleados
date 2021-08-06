@@ -5,7 +5,6 @@ const Utils = require("../utils/utils.js");
 const controller = require("./empleados.controller.js");
 
 const config = require("../config/config.js");
-var regionStatic = require('../utils/regionHelper.js');
 
 var moment = require('moment');
 const { check } = require('express-validator');
@@ -15,101 +14,80 @@ exports.create = (req, res) => {
   var errors = [];
   // Validate request
   if (!req.body) {
-    res.status(400).send({
-      message: "Content can not be empty!"
-    });
+    errors.push("Importante enviar datos"); 
   }  
-  if((moment(req.body.fechanacimiento, 'YYYY-MM-DD').isValid()) == "false"){
-    errors.push("Fecha no válida, asegurese de agregarla en el YYYY-MM-DD");
+  if(!req.body.name)  {
+    errors.push("Nombre es requerido");    
   }
-  if(!req.body.hasOwnProperty("name")){
-    errors.push("name es requerido");
+  if(!req.body.email)  {
+    errors.push("Email es requerido");    
   }
-  if(!req.body.hasOwnProperty("email")){
-    errors.push("email es requerido");
+  if(!req.body.fechanacimiento)  {
+    errors.push("Fecha de nacimiento es requerido");    
   }
-
-  //res.send(errors);
+  if(!req.body.direccion)  {
+    errors.push("Direccion es requerido");    
+  }
+  if(!req.body.puesto)  {
+    errors.push("Puesto es requerido");    
+  }  
   
+  if((!req.body.skills) || !Array.isArray(req.body.skills))  {
+    errors.push('Los Skills son requeridos en formato:[{"id":"3"},{"id":"4"}] ');    
+  }
+  var regExpEmail = /([A-Z]|[a-z]|[^<>()\[\]\\\/.,;:\s@"]){4,}\@([A-Z]|[a-z]|[^<>()\[\]\\\/.,;:\s@"]){4,}\.(com|net)/;
+  if((req.body.email) && (!regExpEmail.test(req.body.email)))  {
+    errors.push("Formato de email invalido, solo se acepta .com, .org y .net");    
+  }
 
-  // Create
-  const empleado = new Empleado({
-    name: req.body.name,
-    email: req.body.email,
-    puesto: req.body.puesto,
-    fechanacimiento: req.body.fechanacimiento,
-    direccion: req.body.direccion
-  });
-
-  // Save
-  Empleado.create(empleado, (err, data) => {
-    if (err){
-      res.status(500).send({
-        status:
-          "error",
-        message:
-          err.message || "Some error occurred while creating the Customer."
-      });
-    }else{ 
-      
-      //Create Skills Relation
-      req.body.skills.forEach(skill => { 
-        const skill_employee = new SkillEmployee({
-          id_employee: data.id,
-          id_skill: skill.id,
-        });     
-        
-        SkillEmployee.create(skill_employee, (err, skills) => {
-            console.log(skills);
-        });        
-      });
-    
-      //SkillEmployee.create
-      res.send({
-        status:
-          "success",
-        data:
-          data
-      });
-    } 
-  });  
-};
-
-exports.setRegion = async (req, res) => {
-  
-  regionStatic.setRegion(req.params.regionId)
-  res.send(regionStatic.getRegion());
-};
-
-exports.getCompleteAll = async (req, res) => {
-    let dates = [];
-    let regions = []; 
-    let selectedRegion = 1;   
-    try {
-      //dates = await exports.getArrayDates();
-      //regions = await exports.getRegions();
-    }
-    catch( err ) {
-        console.log("Error occured in one of the API call: ", err);
-    };
-    Empleado.getCompleteAll((err, data) => {
-      if (err){
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while retrieving radiobases."
-        });
-      } else{ 
-        var items = []; 
-        data.forEach(radiobase => { 
-          radiobase.date = Utils.getHumanDate(radiobase.fecha);             
-          items.push(radiobase); 
-        });  
-
-        res.render('main', {layout : 'index', radioBases: items, listExists: true, config:config,fechas:dates,regions:regions,selectedRegion: selectedRegion});
-
-      }
+  if(errors.length > 0){
+    console.log("error");
+    res.status(400).send({
+      errors: errors
     });
+  }else{   
+      // Create
+      const empleado = new Empleado({
+        name: req.body.name,
+        email: req.body.email,
+        puesto: req.body.puesto,
+        fechanacimiento: req.body.fechanacimiento,
+        direccion: req.body.direccion
+      });
 
+      // Save
+      Empleado.create(empleado, (err, data) => {
+        if (err){
+          res.status(500).send({
+            status:
+              "error",
+            message:
+              err.message || "Some error occurred while creating the Customer."
+          });
+        }else{ 
+          
+          //Create Skills Relation
+          req.body.skills.forEach(skill => { 
+            const skill_employee = new SkillEmployee({
+              id_employee: data.id,
+              id_skill: skill.id,
+            });     
+            
+            SkillEmployee.create(skill_employee, (err, skills) => {
+                console.log(skills);
+            });        
+          });
+        
+          //SkillEmployee.create
+          res.send({
+            status:
+              "success",
+            data:
+              data
+          });
+        } 
+      });
+  }
 };
 
 exports.findAll = async(req, res) => {
@@ -142,40 +120,7 @@ exports.findAll = async(req, res) => {
   
 };
 
-
-/*exports.getRegions = (req, res) => {
-  return new Promise ( (resolve, reject) => {
-    Empleado.getRegions((err, data) => {
-        if (err)
-          reject(err);
-        else{ 
-          let regions = [];
-          data.forEach(region => {               
-            //region.selected = (region.region == regionStatic.getRegion())? 'selected' : '';
-            regions.push(region); 
-          });
-          resolve(regions);   
-        } 
-      });
-  });
-};*/
-/*
-exports.getArrayDates  = (req, re) => {
-  return new Promise ( (resolve, reject) => {
-
-    Empleado.getDates((err, data) => {
-      if (err)
-        reject(err);
-      else{        
-        resolve( Utils.getArrayDates(data) );   
-      } 
-      
-    });
-  });
-};*/
-
 exports.getSkillsbyEmployyeID  = (id) => {
-  //console.log(id);
   return new Promise ( (resolve, reject) => {
 
     SkillEmployee.findByEmployeeId(id, (err, data) => {
