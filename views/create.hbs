@@ -133,7 +133,6 @@
                         } else if (!this.validEmail(this.email)) {
                             this.errors.push('El correo electrónico debe ser válido.');
                         }
-                        //console.log(this.errors.length);
 
 
                         if (!this.errors.length) {                            
@@ -146,19 +145,16 @@
                                     fechanacimiento: this.fechanacimiento,
                                     skills: this.skillstoSave
                                 })
-                                .then((res) => {                                    
-                                    if(res.status == "success"){
-                                        //self.$router.push('/empleados');
-                                        document.location = "{{config.DOMAIN}}";
+                                .then((res) => {                                                                                
+                                    if(res.data.status == "success"){                                                       
+                                        window.location.href = '/';
                                     }                                    
                                 })
                                 .catch((error) => {
-                                    // error.response.status Check status code
                                 }).finally(() => {
-                                    //Perform action in always
+
                             });
-                            //e.preventDefault();
-                            //return;
+
                            
                         }                       
                                                

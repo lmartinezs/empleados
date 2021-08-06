@@ -14,8 +14,8 @@
             </thead>
             <tbody>
                 <tr v-for="(result, index) in empleados">
-                <th scope="row"><a v-bind:href="'/empleados/' + result.id">${ index }</th>
-                <td>${ result.name }</td>
+                <th scope="row"><a v-bind:href="'/empleados/' + result.id">${ index }</a></th>
+                <td><a v-bind:href="'/empleados/' + result.id">${ result.name }</a></td>
                 <td>${ result.email }</td>
                 <td>${ result.puesto }</td>                
                 <td>${ result.direccion }</td>                
@@ -31,7 +31,7 @@
    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/moment@2.26.0/moment.js"></script>
     <script>
-      const url = "{{config.DOMAIN}}/api/empleados";
+      const url = "{{config.DOMAIN}}api/empleados";
 
       const vm = new Vue({
               delimiters: ['${', '}'],

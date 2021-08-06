@@ -1,5 +1,6 @@
 module.exports = app => {
     const empleados = require("../controllers/empleados.controller.js");
+    const config = require("../config/config.js");    
     
     const { check } = require('express-validator');
     // Create a new Radiobase
@@ -11,7 +12,7 @@ module.exports = app => {
       res.render('home', {layout : 'index', title:"HOME"});
     });
     app.get("/", function(req, res, next) {      
-      res.render('home', {layout : 'index', title:"HOME"});
+      res.render('home', {layout : 'index', title:"HOME",config:config});
     });
 
     app.get("/create", function(req, res, next) {      
@@ -19,21 +20,7 @@ module.exports = app => {
     });
     
     app.get("/empleados/:empleadoId", empleados.detail);     
-    
-
-    //app.get("/empleados/regions", empleados.getRegions);
-  
-    // Retrieve a single Radiobase with radiobaseId
-    
-
-    app.get("/region/:regionId", empleados.setRegion);
   
     // Update a Radiobase with radiobaseId
     app.put("/empleados/:radiobaseId", empleados.update);
-  
-    // Delete a Radiobase with radiobaseId
-    //app.delete("/radiobases/:radiobaseId", radiobases.delete);
-  
-    // Create all Radiobase
-    //app.delete("/radiobases", radiobases.deleteAll);
   };
