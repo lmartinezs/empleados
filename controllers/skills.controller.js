@@ -3,7 +3,6 @@ const Utils = require("../utils/utils.js");
 const controller = require("./skills.controller.js");
 
 const config = require("../config/config.js");
-var regionStatic = require('../utils/regionHelper.js');
 
 var moment = require('moment');
 const { check } = require('express-validator');
