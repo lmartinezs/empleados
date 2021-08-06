@@ -1,4 +1,4 @@
-module.exports = app => {    
+module.exports = app => {
     const skills = require("../controllers/skills.controller.js");
 
     app.get("/api/skills", skills.findAll);

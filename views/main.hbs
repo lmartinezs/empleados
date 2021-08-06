@@ -1,33 +1,33 @@
- <div class="container maincontent">
-    
-    <div id="app">
+<div class="container maincontent">
 
-      <table class="table">
-        <thead>
-          {{#if listExists}}
-          <tr>
-            <th scope="col">Radiobase</th>            
-            <th scope="col">Fecha</th>
-            <th scope="col">Region</th>
-            <th scope="col">Trafico</th>
-          </tr>
-          {{/if}}
-        </thead>
-        <tbody>
-            {{#if listExists}} 
-            {{#each radioBases}}
-                <tr>
-                    <td scope="row">{{this.radiobase}}</td>                   
-                    <td scope="row">{{this.date}}</td>                   
-                    <td scope="row">{{this.region}}</td>                   
-                    <td scope="row">{{this.trafico}}</td>                   
-                    
-                </tr>
-            {{/each}}
-          </tr>
-           {{/if}}
-        </tbody>
-      </table>
+  <div id="app">
 
-    </div>
+    <table class="table">
+      <thead>
+        {{#if listExists}}
+        <tr>
+          <th scope="col">Radiobase</th>
+          <th scope="col">Fecha</th>
+          <th scope="col">Region</th>
+          <th scope="col">Trafico</th>
+        </tr>
+        {{/if}}
+      </thead>
+      <tbody>
+        {{#if listExists}}
+        {{#each radioBases}}
+        <tr>
+          <td scope="row">{{this.radiobase}}</td>
+          <td scope="row">{{this.date}}</td>
+          <td scope="row">{{this.region}}</td>
+          <td scope="row">{{this.trafico}}</td>
+
+        </tr>
+        {{/each}}
+        </tr>
+        {{/if}}
+      </tbody>
+    </table>
+
+  </div>
 </div>
